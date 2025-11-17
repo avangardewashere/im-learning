@@ -1,13 +1,50 @@
-"use client";
-
+"use client"
 import { useState } from "react";
 import Link from "next/link";
 
+type NavSubLink = {
+  label: string;
+  href: string;
+};
+
+type NavItem = {
+  label: string;
+  href?: string;
+  subLinks?: NavSubLink[];
+};
+
+const NAV_ITEMS: NavItem[] = [
+  {
+    label: "Topics",
+    subLinks: [
+      { label: "React", href: "/topics/react" },
+      { label: "AWS", href: "/topics/aws" },
+    ],
+  },
+  {
+    label: "About",
+    href: "/about",
+  },
+];
+
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
+  const [hoveredMenu, setHoveredMenu] = useState<string | null>(null);
+  const [expandedMobileMenu, setExpandedMobileMenu] = useState<string | null>(
+    null
+  );
 
   const toggleMenu = () => {
-    setIsOpen(!isOpen);
+    setIsOpen((prev) => !prev);
+  };
+
+  const toggleMobileSubMenu = (label: string) => {
+    setExpandedMobileMenu((prev) => (prev === label ? null : label));
+  };
+
+  const handleMobileLinkClick = () => {
+    setIsOpen(false);
+    setExpandedMobileMenu(null);
   };
 
   return (
@@ -37,45 +74,94 @@ export default function Navigation() {
 
       {/* Navigation List - Desktop */}
       <ul className="hidden md:flex items-center gap-6">
-        <li>
-          <Link
-            href="/topics"
-            className="text-gray-700 hover:text-sky-300 transition-colors"
-          >
-            Topics
-          </Link>
-        </li>
-        <li>
-          <Link
-            href="/about"
-            className="text-gray-700 hover:text-sky-300 transition-colors"
-          >
-            About
-          </Link>
-        </li>
+        {NAV_ITEMS.map((item) => (
+          <li key={item.label} className="relative">
+            {item.subLinks ? (
+              <div
+                onMouseEnter={() => setHoveredMenu(item.label)}
+                onMouseLeave={() => setHoveredMenu(null)}
+                className="relative"
+              >
+                <span className="text-gray-700 hover:text-sky-300 transition-colors cursor-default">
+                  {item.label}
+                </span>
+                {hoveredMenu === item.label && (
+                  <div className="absolute top-full left-0 pt-2 bg-white border border-gray-200 rounded-lg shadow-lg pb-2 min-w-[120px] z-50">
+                    {item.subLinks.map((subLink) => (
+                      <Link
+                        key={subLink.label}
+                        href={subLink.href}
+                        className="block px-4 py-2 text-gray-700 hover:text-sky-300 hover:bg-gray-50 transition-colors"
+                      >
+                        {subLink.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : (
+              item.href && (
+                <Link
+                  href={item.href}
+                  className="text-gray-700 hover:text-sky-300 transition-colors"
+                >
+                  {item.label}
+                </Link>
+              )
+            )}
+          </li>
+        ))}
       </ul>
 
       {/* Mobile Menu - Shown when hamburger is clicked */}
       {isOpen && (
         <ul className="absolute top-full left-0 right-0 bg-white border-b border-gray-200 md:hidden flex flex-col py-4">
-          <li>
-            <Link
-              href="/topics"
-              onClick={() => setIsOpen(false)}
-              className="block px-4 py-2 text-gray-700 hover:text-sky-300 hover:bg-gray-50 transition-colors"
-            >
-              Topics
-            </Link>
-          </li>
-          <li>
-            <Link
-              href="/about"
-              onClick={() => setIsOpen(false)}
-              className="block px-4 py-2 text-gray-700 hover:text-sky-300 hover:bg-gray-50 transition-colors"
-            >
-              About
-            </Link>
-          </li>
+          {NAV_ITEMS.map((item) => (
+            <li key={item.label}>
+              {item.subLinks ? (
+                <>
+                  <button
+                    onClick={() => toggleMobileSubMenu(item.label)}
+                    className="w-full text-left px-4 py-2 text-gray-700 hover:text-sky-300 hover:bg-gray-50 transition-colors flex items-center justify-between"
+                  >
+                    <span>{item.label}</span>
+                    <span
+                      className={`transition-transform ${
+                        expandedMobileMenu === item.label ? "rotate-180" : ""
+                      }`}
+                    >
+                      ▼
+                    </span>
+                  </button>
+                  {expandedMobileMenu === item.label && (
+                    <ul className="bg-gray-50">
+                      {item.subLinks.map((subLink) => (
+                        <li key={subLink.label}>
+                          <Link
+                            href={subLink.href}
+                            onClick={handleMobileLinkClick}
+                            className="block px-8 py-2 text-gray-700 hover:text-sky-300 hover:bg-gray-100 transition-colors"
+                          >
+                            {subLink.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </>
+              ) : (
+                item.href && (
+                  <Link
+                    href={item.href}
+                    onClick={handleMobileLinkClick}
+                    className="block px-4 py-2 text-gray-700 hover:text-sky-300 hover:bg-gray-50 transition-colors"
+                  >
+                    {item.label}
+                  </Link>
+                )
+              )}
+            </li>
+          ))}
         </ul>
       )}
     </>

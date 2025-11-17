@@ -16,7 +16,7 @@ export default function Logo({ size = "regular" }: LogoProps) {
   return (
     <Link href="/" className="cursor-pointer">
       <h1 className={`${sizeClasses[size]} font-bold text-sky-300`}>
-        <span className="text-amber-400">S</span>tudios
+        <span className="text-amber-400">S</span>tudious
       </h1>
     </Link>
   );
