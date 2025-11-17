@@ -1,5 +1,5 @@
-"use client"
-import { useState } from "react";
+"use client";
+import { useState, memo, useCallback } from "react";
 import Link from "next/link";
 
 type NavSubLink = {
@@ -34,18 +34,18 @@ export default function Navigation() {
     null
   );
 
-  const toggleMenu = () => {
+  const toggleMenu = useCallback(() => {
     setIsOpen((prev) => !prev);
-  };
+  }, []);
 
-  const toggleMobileSubMenu = (label: string) => {
+  const toggleMobileSubMenu = useCallback((label: string) => {
     setExpandedMobileMenu((prev) => (prev === label ? null : label));
-  };
+  }, []);
 
-  const handleMobileLinkClick = () => {
+  const handleMobileLinkClick = useCallback(() => {
     setIsOpen(false);
     setExpandedMobileMenu(null);
-  };
+  }, []);
 
   return (
     <>
