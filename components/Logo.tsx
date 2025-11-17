@@ -1,3 +1,4 @@
+import { memo } from "react";
 import Link from "next/link";
 
 type LogoSize = "small" | "regular" | "large";
@@ -6,7 +7,7 @@ interface LogoProps {
   size?: LogoSize;
 }
 
-export default function Logo({ size = "regular" }: LogoProps) {
+function Logo({ size = "regular" }: LogoProps) {
   const sizeClasses = {
     small: "text-lg sm:text-xl",
     regular: "text-xl sm:text-2xl",
@@ -22,3 +23,4 @@ export default function Logo({ size = "regular" }: LogoProps) {
   );
 }
 
+export default memo(Logo);
